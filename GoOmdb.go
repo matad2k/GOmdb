@@ -12,12 +12,13 @@ const (
 	BaseUrl = "http://www.omdbapi.com/"
 )
 
-type Client struct {
+type client struct {
 	apikey string
 }
 
-func NewClient(ak string) *Client {
-	return &Client{apikey: ak}
+// Function creating Client with apikey
+func NewClient(ak string) *client {
+	return &client{apikey: ak}
 }
 
 type Rating struct {
@@ -46,23 +47,26 @@ func adjustTitle(title string) string {
 	return strings.Replace(title, " ", ".", -1)
 }
 
-func getByTitle(query string, c *Client) string {
+func getByTitle(query string, c *client) string {
 	return BaseUrl + "?t=" + adjustTitle(query) + "&apikey=" + c.apikey
 }
-func getDataById(query string, c *Client) string {
+
+func getDataById(query string, c *client) string {
 	return BaseUrl + "?i=" + query + "&apikey=" + c.apikey
 }
-func GetDataByTitle(title string, client *Client) {
-	resp, err := http.Get(getByTitle(title, client))
+
+// Getting title for argument as client argument create with NewClient Function
+func GetDataByTitle(title string, c *client) *OmdbTitle {
+	var movie OmdbTitle
+	resp, err := http.Get(getByTitle(title, c))
 	defer resp.Body.Close()
 	if err != nil {
 		fmt.Printf("Error: %s\n", err)
 	} else {
 		data, _ := ioutil.ReadAll(resp.Body)
-		var movie OmdbTitle
 		json.Unmarshal(data, &movie)
-		ShowMovieInfo(&movie)
 	}
+	return &movie
 }
 
 func ShowMovieInfo(movie *OmdbTitle) {
