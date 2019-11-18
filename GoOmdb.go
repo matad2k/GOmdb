@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 const (
@@ -41,8 +42,12 @@ type OmdbTitle struct {
 	Ratings  []Rating
 }
 
+func adjustTitle(title string) string {
+	return strings.Replace(title, " ", ".", -1)
+}
+
 func getByTitle(query string, c *Client) string {
-	return BaseUrl + "?t=" + query + "&apikey=" + c.apikey
+	return BaseUrl + "?t=" + adjustTitle(query) + "&apikey=" + c.apikey
 }
 func getDataById(query string, c *Client) string {
 	return BaseUrl + "?i=" + query + "&apikey=" + c.apikey
