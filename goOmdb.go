@@ -1,4 +1,4 @@
-package GoOmdb
+package goOmdb
 
 import (
 	"encoding/json"
@@ -43,12 +43,10 @@ type OmdbTitle struct {
 	Ratings  []Rating
 }
 
-func adjustTitle(title string) string {
-	return strings.Replace(title, " ", ".", -1)
-}
-
 func getByTitle(query string, c *client) string {
-	return baseUrl + "?t=" + adjustTitle(query) + "&apikey=" + c.apikey
+	return baseUrl +
+		"?t=" + strings.Replace(query, " ", ".", -1) +
+		"&apikey=" + c.apikey
 }
 
 func getDataById(query string, c *client) string {
