@@ -46,7 +46,8 @@ type OmdbTitle struct {
 func (c *client) getByTitle(query string) string {
 	return baseUrl +
 		"?t=" + strings.Replace(query, " ", ".", -1) +
-		"&apikey=" + c.apikey
+		"&apikey=" +
+		c.apikey
 }
 
 func (c *client) getDataById(query string) string {
@@ -70,6 +71,6 @@ func (c *client) GetDataByTitle(title string) *OmdbTitle {
 	return &movie
 }
 
-func ShowMovieInfo(movie *OmdbTitle) {
-	fmt.Printf("%s (%s): %s\n", movie.Title, movie.Year, movie.Ratings[0].Value)
+func (m *OmdbTitle) ShowMovieInfo() string {
+	return fmt.Sprintf("%s (%s): %s\n", m.Title, m.Year, m.Ratings[0].Value)
 }
