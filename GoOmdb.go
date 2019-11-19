@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	BaseUrl = "http://www.omdbapi.com/"
+	baseUrl = "http://www.omdbapi.com/"
 )
 
 type client struct {
@@ -17,8 +17,8 @@ type client struct {
 }
 
 // Function creating Client with apikey
-func NewClient(ak string) *client {
-	return &client{apikey: ak}
+func NewClient(api string) *client {
+	return &client{apikey: api}
 }
 
 type Rating struct {
@@ -48,11 +48,11 @@ func adjustTitle(title string) string {
 }
 
 func getByTitle(query string, c *client) string {
-	return BaseUrl + "?t=" + adjustTitle(query) + "&apikey=" + c.apikey
+	return baseUrl + "?t=" + adjustTitle(query) + "&apikey=" + c.apikey
 }
 
 func getDataById(query string, c *client) string {
-	return BaseUrl + "?i=" + query + "&apikey=" + c.apikey
+	return baseUrl + "?i=" + query + "&apikey=" + c.apikey
 }
 
 // Getting title for argument as client argument create with NewClient Function
@@ -64,7 +64,10 @@ func GetDataByTitle(title string, c *client) *OmdbTitle {
 		fmt.Printf("Error: %s\n", err)
 	} else {
 		data, _ := ioutil.ReadAll(resp.Body)
-		json.Unmarshal(data, &movie)
+		err := json.Unmarshal(data, &movie)
+		if err != nil {
+			fmt.Printf("Error: %s\n", err)
+		}
 	}
 	return &movie
 }
