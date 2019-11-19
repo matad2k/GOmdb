@@ -43,20 +43,20 @@ type OmdbTitle struct {
 	Ratings  []Rating
 }
 
-func getByTitle(query string, c *client) string {
+func (c *client) getByTitle(query string) string {
 	return baseUrl +
 		"?t=" + strings.Replace(query, " ", ".", -1) +
 		"&apikey=" + c.apikey
 }
 
-func getDataById(query string, c *client) string {
+func (c *client) getDataById(query string) string {
 	return baseUrl + "?i=" + query + "&apikey=" + c.apikey
 }
 
 // Getting title for argument as client argument create with NewClient Function
-func GetDataByTitle(title string, c *client) *OmdbTitle {
+func (c *client) GetDataByTitle(title string) *OmdbTitle {
 	var movie OmdbTitle
-	resp, err := http.Get(getByTitle(title, c))
+	resp, err := http.Get(c.getByTitle(title))
 	defer resp.Body.Close()
 	if err != nil {
 		fmt.Printf("Error: %s\n", err)
