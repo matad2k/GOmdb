@@ -1,9 +1,10 @@
-package goOmdb
+package goomdb
 
 import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -18,6 +19,9 @@ type client struct {
 
 // Function creating Client with apikey
 func NewClient(api string) *client {
+	if api == "" {
+		log.Fatal("Provide Api key from OMDB")
+	}
 	return &client{apikey: api}
 }
 
@@ -45,7 +49,8 @@ type OmdbTitle struct {
 
 func (c *client) getByTitle(query string) string {
 	return baseUrl +
-		"?t=" + strings.Replace(query, " ", ".", -1) +
+		"?t=" +
+		strings.Replace(query, " ", ".", -1) +
 		"&apikey=" +
 		c.apikey
 }
