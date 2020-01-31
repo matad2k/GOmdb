@@ -20,10 +20,18 @@ type client struct {
 	apikey string
 }
 
+var (
+	NoApiError = errors.New("No Api key provided")
+	InvalidApi = errors.New("Invalid api key")
+)
+
 // Function creating Client with provided api-key
 func NewClient(api string) (*client, error) {
 	if api == "" {
-		return &client{}, errors.New("No Api key provided")
+		return &client{}, NoApiError
+	}
+	if len(api) != 8 {
+		return &client{}, InvalidApi
 	}
 	return &client{apikey: api}, nil
 }
