@@ -66,7 +66,7 @@ func Test_client_generateQueryString(t *testing.T) {
 			name:   "",
 			fields: fields{"testApi"},
 			args:   args{"TestMovie", movieByTitle},
-			want:   "http://www.omdbapi.com/?apikey=testApi&t",
+			want:   "http://www.omdbapi.com/?apikey=testApi&t=TestMovie",
 		},
 	}
 	for _, tt := range tests {
