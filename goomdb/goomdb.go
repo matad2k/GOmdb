@@ -38,26 +38,40 @@ func NewClient(api string) (*client, error) {
 	return &client{apikey: api}, nil
 }
 
+type responseError struct {
+	Response bool
+	Error    string
+}
+
 type Rating struct {
 	Source string
 	Value  string
 }
 
 type OmdbTitle struct {
-	Title    string
-	Year     string
-	Rated    string
-	Released string
-	Runtime  string
-	Genre    string
-	Director string
-	Writer   string
-	Actors   string
-	Plot     string
-	Country  string
-	Awards   string
-	Poster   string
-	Ratings  []Rating
+	Title      string
+	Year       string
+	Rated      string
+	Released   string
+	Runtime    string
+	Genre      string
+	Director   string
+	Writer     string
+	Actors     string
+	Plot       string
+	Country    string
+	Awards     string
+	Poster     string
+	Ratings    []Rating
+	Metascore  string
+	ImdbRating string
+	ImdbVotes  string
+	ImdbID     string
+	Type       string
+	BoxOffice  string
+	Production string
+	Website    string
+	Response   string
 }
 
 // Function for generating query string for api
