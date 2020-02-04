@@ -21,8 +21,8 @@ type client struct {
 }
 
 var (
-	NoApiError = errors.New("No Api key provided")
-	InvalidApi = errors.New("Invalid api key")
+	NoApiError = errors.New("NO API KEY PROVIDED")
+	InvalidApi = errors.New("INVALID API KEY")
 )
 
 // Function creating Client with provided api-key
@@ -81,24 +81,16 @@ func (c *client) generateQueryString(query string, mode uint) string {
 
 // Getting title for argument as client argument create with NewClient Function
 func (c *client) GetDataByTitle(title string) *OmdbTitle {
-	var movie OmdbTitle
-	resp, err := http.Get(c.generateQueryString(title, movieByTitle))
-	defer resp.Body.Close()
-	if err != nil {
-		fmt.Printf("Error: %s\n", err)
-	} else {
-		data, _ := ioutil.ReadAll(resp.Body)
-		err := json.Unmarshal(data, &movie)
-		if err != nil {
-			fmt.Printf("Error: %s\n", err)
-		}
-	}
-	return &movie
+	return c.extractJsonData(title, movieByTitle)
 }
 
 func (c *client) GetDataById(id string) *OmdbTitle {
+	return c.extractJsonData(id, movieByID)
+}
+
+func (c *client) extractJsonData(id string, mode uint) *OmdbTitle {
 	var movie OmdbTitle
-	resp, err := http.Get(c.generateQueryString(id, movieByID))
+	resp, err := http.Get(c.generateQueryString(id, mode))
 	defer resp.Body.Close()
 	if err != nil {
 		fmt.Printf("Error: %s\n", err)
