@@ -1,9 +1,11 @@
 package goomdb
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -104,6 +106,12 @@ func (c *client) extractJsonData(id string, mode uint) *OmdbTitle {
 	return &movie
 }
 
-func (m *OmdbTitle) MovieInfo() string {
-	return fmt.Sprintf("%s (%s) %s IMDB, %s RT \n ", m.Title, m.Year, m.Ratings[0].Value, m.Ratings[1].Value)
+func (m *OmdbTitle) MovieInfo() io.Writer {
+	return bytes.NewBufferString(
+		fmt.Sprintf("%s (%s) %s IMDB, %s RT \n",
+			m.Title,
+			m.Year,
+			m.Ratings[0].Value,
+			m.Ratings[1].Value),
+	)
 }
