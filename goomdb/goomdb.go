@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"net/url"
 )
@@ -23,12 +24,17 @@ type client struct {
 }
 
 var (
-	NoApiError = errors.New("NO API KEY PROVIDED")
-	InvalidApi = errors.New("INVALID API KEY")
+	NoApiError   = errors.New("NO API KEY PROVIDED")
+	InvalidApi   = errors.New("INVALID API KEY")
+	NoConnection = errors.New(baseUrl + " UNAVAILABLE OR NO INTERNET CONNECTION")
 )
 
 // Function creating Client with provided api-key
 func NewClient(api string) (*client, error) {
+	_, err := net.Dial("tcp", baseUrl)
+	if err != nil {
+		return &client{}, NoConnection
+	}
 	if api == "" {
 		return &client{}, NoApiError
 	}
@@ -96,15 +102,15 @@ func (c *client) generateQueryString(query string, mode uint) string {
 }
 
 // Getting title for argument as client argument create with NewClient Function
-func (c *client) GetDataByTitle(title string) *OmdbTitle {
+func (c *client) GetDataByTitle(title string) (*OmdbTitle, error) {
 	return c.extractJsonData(title, movieByTitle)
 }
 
-func (c *client) GetDataById(id string) *OmdbTitle {
+func (c *client) GetDataById(id string) (*OmdbTitle, error) {
 	return c.extractJsonData(id, movieByID)
 }
 
-func (c *client) extractJsonData(id string, mode uint) *OmdbTitle {
+func (c *client) extractJsonData(id string, mode uint) (*OmdbTitle, error) {
 	var movie OmdbTitle
 	resp, err := http.Get(c.generateQueryString(id, mode))
 	defer resp.Body.Close()
@@ -117,7 +123,7 @@ func (c *client) extractJsonData(id string, mode uint) *OmdbTitle {
 			fmt.Printf("Error: %s\n", err)
 		}
 	}
-	return &movie
+	return &movie, nil
 }
 
 func (m *OmdbTitle) MovieInfo() io.Writer {
