@@ -7,9 +7,11 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 )
 
@@ -26,34 +28,32 @@ type client struct {
 
 var (
 	NoApiError = errors.New("NO API KEY PROVIDED")
-	InvalidApi = errors.New("INVALID API KEY")
 )
 
 // Function creating Client with provided api-key
 func NewClient(api string) (*client, error) {
+
+	// Checking if website is avalible if not returns error
 	_, err := net.Dial("tcp", "www.omdbapi.com:80")
 	if err != nil {
 		return &client{}, err
 	}
+
+	// Checking on aplication level if apikey is empty if yes return NoApiError
 	if api == "" {
 		return &client{}, NoApiError
 	}
-	if len(api) != 8 {
-		return &client{}, InvalidApi
-	}
+
 	return &client{apikey: api}, nil
 }
 
-//type responseError struct {
-//	Response bool
-//	Error    string
-//}
-
+// Structure for OmdbTitle Rating table
 type Rating struct {
 	Source string
 	Value  string
 }
 
+// Strcture for JSON object from OMDB API for GetDataByTitle and GetDataBy
 type OmdbTitle struct {
 	Title      string
 	Year       string
@@ -78,6 +78,7 @@ type OmdbTitle struct {
 	Production string
 	Website    string
 	Response   string
+	Error      string
 }
 
 // Function for generating query string for api
@@ -123,7 +124,15 @@ func (c *client) extractJsonData(id string, mode uint) (*OmdbTitle, error) {
 			fmt.Printf("Error: %s\n", err)
 		}
 	}
-	return &movie, nil
+	postiveResponse, err := strconv.ParseBool(movie.Response)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if postiveResponse == true {
+		return &movie, nil
+	} else {
+		return &movie, errors.New("Server response:" + movie.Error)
+	}
 }
 
 func (m *OmdbTitle) MovieInfo() io.Writer {
