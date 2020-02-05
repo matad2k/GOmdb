@@ -10,6 +10,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 const (
@@ -24,16 +25,15 @@ type client struct {
 }
 
 var (
-	NoApiError   = errors.New("NO API KEY PROVIDED")
-	InvalidApi   = errors.New("INVALID API KEY")
-	NoConnection = errors.New(baseUrl + " UNAVAILABLE OR NO INTERNET CONNECTION")
+	NoApiError = errors.New("NO API KEY PROVIDED")
+	InvalidApi = errors.New("INVALID API KEY")
 )
 
 // Function creating Client with provided api-key
 func NewClient(api string) (*client, error) {
-	_, err := net.Dial("tcp", baseUrl)
+	_, err := net.Dial("tcp", "www.omdbapi.com:80")
 	if err != nil {
-		return &client{}, NoConnection
+		return &client{}, err
 	}
 	if api == "" {
 		return &client{}, NoApiError
@@ -44,10 +44,10 @@ func NewClient(api string) (*client, error) {
 	return &client{apikey: api}, nil
 }
 
-type responseError struct {
-	Response bool
-	Error    string
-}
+//type responseError struct {
+//	Response bool
+//	Error    string
+//}
 
 type Rating struct {
 	Source string
@@ -88,7 +88,7 @@ func (c *client) generateQueryString(query string, mode uint) string {
 	params.Add("apikey", c.apikey)
 	switch mode {
 	case movieByTitle:
-		params.Add("t", query)
+		params.Add("t", strings.ReplaceAll(query, " ", "."))
 	case movieByID:
 		params.Add("i", query)
 	case serachMovie:
