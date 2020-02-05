@@ -1,6 +1,7 @@
 package goomdb
 
 import (
+	"os"
 	"reflect"
 	"testing"
 )
@@ -22,15 +23,22 @@ func TestNewClient(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name:    "EWE",
-			args:    args{"EWE"},
-			want:    &client{},
+			name:    "Invalid",
+			args:    args{"3232"},
+			want:    &client{apikey: "3232"},
 			wantErr: true,
+		},
+		{
+			name:    "Postive",
+			args:    args{os.Getenv("SP_OMDB_API")},
+			want:    &client{apikey: os.Getenv("SP_OMDB_API")},
+			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := NewClient(tt.args.api)
+			_, err = got.GetDataByTitle("Avatar")
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewClient() error = %v, wantErr %v", err, tt.wantErr)
 				return
